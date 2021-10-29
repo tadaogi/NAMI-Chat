@@ -20,8 +20,9 @@ struct PeripheralInfo {
     var lastDate: Date
 }
 
+var UUID_Service_str = "73C98F4C-F74F-4918-9B0A-5EF4C6C021C6"
 struct BLEcommService {
-    static let UUID_Service = CBUUID(string: "73C98F4C-F74F-4918-9B0A-5EF4C6C021C6")
+    static let UUID_Service = CBUUID(string: UUID_Service_str)
     static let UUID_Read = CBUUID(string: "1BE31CB9-9E07-4892-AA26-30E87ABE9F70")
     static let UUID_Write = CBUUID(string: "0C136FCC-3381-4F1E-9602-E2A3F8B70CEB")
 }
@@ -183,9 +184,10 @@ public class BLECentral: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.log.addItem(logText: "kCBAdvDataLocalName, \(peripheral.name ?? "unknown"), \(peripheral.identifier.uuidString), \(LocalName),")
         
         // すべてのデバイスをコネクトに行く
-        //if LocalName as! String  == "BLEcommTest0" {
-        //    print("I got BLEcommTest0")
-        if true {
+        // debug のために、BLEcommTest0 だけにしてみる。
+        if LocalName as! String  == "BLEcommTest0" {
+            print("I got BLEcommTest0")
+        //if true {
             print("LocalName:",LocalName)
         
             // BLEtest2のロジックを、コメントも含めてそのままコピペ
@@ -324,6 +326,7 @@ public class BLECentral: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.devices.updateDevice(peripheral: peripheral)
 
         // 処理全体をリセットしたいが、転送中のTransferCとかはどうするのか？
+        print("connectedPeripheral = nil L329")
         connectedPeripheral = nil
         
         print("transferList \(transferCList)")
@@ -406,6 +409,9 @@ public class BLECentral: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             if (serviceUUID1=="180A") {
                 print("C: call discoverCharacteristics for 180A")
                 peripheral.discoverCharacteristics(nil, for:service as CBService)
+            } else if (serviceUUID1 == UUID_Service_str) { // chat 用
+                    print("C: call discoverCharacteristics for UUID_Service")
+                    peripheral.discoverCharacteristics(nil, for:service as CBService)
             } else {
                 print("Not call discover characteristics") // 呼んでも良いような気はする
             
@@ -450,20 +456,20 @@ public class BLECentral: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         {
             print("found characteristics.uuid = \(characteristic.uuid)")
             if characteristic.uuid == UUID_Read {
-                print("find UUID_Read and read value")
+                print("find UUID_Read and read value (in didDiscoverCharacteristicsFor)")
                 // 値を読む
                 print("don't read for debug")
-                //peripheral.readValue(for: characteristic)
+                //peripheral.readValue(for: characteristic) // for chat -> no need?
                 foundCharacteristicR = characteristic // save
             }
             
             if characteristic.uuid == UUID_Write {
-                print("find UUID_Write and write value")
+                print("find UUID_Write and write value (in didDiscoverCharacteristicsFor)")
                 //let data = "BLEcommTest0".data(using: String.Encoding.utf8, allowLossyConversion:true)
                 //peripheral.writeValue(data!, for: characteristic, type: CBCharacteristicWriteType.withResponse)
                 
                 print("don't write for debug")
-                //writeData("debugWrite", peripheral: peripheral)
+                //writeData("debugWrite", peripheral: peripheral) // for chat -> no need?
                 
                 // とりあえずUUID_Writeが見つかったら、メッセージのTransferを開始する。
                 if self.userMessage != nil {
@@ -645,7 +651,7 @@ public class BLECentral: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
 
                 for characteristic in service.characteristics! {
                      if characteristic.uuid == UUID_Write {
-                        print("find UUID_Write and write value")
+                        print("find UUID_Write and write value (in BLECentral.writeData)")
                         // notifyを受けるようにする。どこかで戻すのか？
                         peripheral.setNotifyValue(true, for: characteristic)
                         print("setNotify")
@@ -706,6 +712,11 @@ public class BLECentral: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.log.addItem(logText: "BLECentral.timerFunc,")
         let obsoleteInterval = Int(UserDefaults.standard.object(forKey: "obsoleteInterval") as? String ?? "600")
 
+        print("do nothing in BLECentral.timerFunc for **debug**")
+        self.log.addItem(logText: "do nothing in BLECentral.timerFunc for **debug**")
+
+        /*
+        
         self.stopScan()
         
         for peripheral in peripheralInfoArray {
@@ -720,6 +731,7 @@ public class BLECentral: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         
         // 他で central manager を使っていると、値が変わってしまうのでおかしくなる可能性がある。
         self.startScan()
+        */
         
     }
 }

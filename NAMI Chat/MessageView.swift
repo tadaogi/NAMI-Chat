@@ -9,7 +9,10 @@ import SwiftUI
 
 struct MessageView: View {
     @State private var inputmessage = ""
+    // messageが表示されないので修正する。2021/10/29
+    // うまくいかないので、元に戻す
     @EnvironmentObject var userMessage : UserMessage
+    //@ObservedObject var userMessage = UserMessage()
     
     var body: some View {
         
@@ -22,7 +25,8 @@ struct MessageView: View {
                     .fill(Color.white)
                     .frame(minWidth: 0.0, maxWidth: .infinity)
                     .frame(height: 0)
-                ForEach(self.userMessage.userMessageList, id: \.code) { messageitem in
+//                ForEach(self.userMessage.userMessageList, id: \.code) { messageitem in
+                ForEach(userMessage.userMessageList, id: \.code) { messageitem in
                     //HStack {
                     let tmptext = messageitem.userMessageID+","+messageitem.userMessageText
                     Text(tmptext)
@@ -67,7 +71,7 @@ struct MessageView_Previews: PreviewProvider {
         /// 以下の行を追加
         ForEach(["iPhone SE (2nd generation)", "iPhone 6s Plus", "iPad Pro (9.7-inch)"], id: \.self) { deviceName in
             MessageView()
-                .environmentObject(UserMessage())
+                //.environmentObject(UserMessage())
                 /// 以下の2行を追加
                 .previewDevice(PreviewDevice(rawValue: deviceName))
                 .previewDisplayName(deviceName)
