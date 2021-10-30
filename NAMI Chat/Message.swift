@@ -176,8 +176,11 @@ class TransferC {
     
     // ＊重要＊ 通信他でエラーになった時の処理がない
     func start() {
+        // MessageViewがアップデートされないので、main にしてみる。2021/10/30
+        // NGなので元に戻す
         let queue = DispatchQueue.global(qos:.default)
         queue.async {
+        //DispatchQueue.main.async{
             print("transfer.start is called")
         
             // send BEGIN0

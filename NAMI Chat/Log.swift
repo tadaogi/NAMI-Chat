@@ -62,8 +62,8 @@ class Log : ObservableObject {
         
         logcount = logcount + 1
         
-        // デバッグのために、10件ごとにログを消す
-        if logcount%10 == 0 {
+        // デバッグのために、10件ごとにログを消す -> 少なすぎるので100件にしてみる
+        if logcount%100 == 0 {
             loglist = [
                 LogItem(logtext: "--- log deleted ---"),
             ]

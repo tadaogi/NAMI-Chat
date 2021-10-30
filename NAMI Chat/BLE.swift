@@ -894,8 +894,10 @@ public class BLEPeripheral: NSObject, CBPeripheralManagerDelegate, ObservableObj
         for request in requests {
             
             if request.characteristic.uuid.isEqual(UUID_Write) {
+                // backgroundからのupdate のエラーが出るので試しに main にしてみる。 → NG
                 let queue = DispatchQueue.global(qos:.default)
                 queue.async {
+                //DispatchQueue.main.async {
                     let requestvalue:Data = request.value!
                     print("write value \(requestvalue)")
                     //  文字列ではないと思われる
